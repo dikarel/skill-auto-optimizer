@@ -52,7 +52,6 @@ How to think about each area:
 - `skill-auto-optimizer/quality_optimization/`: quality-specific standards and optimization objectives
 - `SKILLS_TEST_SUITE.md`: defines the sample broken skills used to evaluate optimizer behavior
 - `TEST.md`: explains how to run repeated optimization passes and graph improvement over time
-- `.beads/`: local repo issue tracking state; update it through `bd`, not by hand
 
 Contributor expectations:
 - if a change affects runtime behavior, update files under `skill-auto-optimizer/`

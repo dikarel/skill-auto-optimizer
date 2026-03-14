@@ -92,6 +92,48 @@ Expected optimizer proposals:
 - add explicit quality guardrails
 - add instrumentation so fast-but-wrong outputs do not score as wins
 
+### `fixture-travel-planning`
+
+Intent:
+- Simulate a skill that handles a multi-constraint planning task without tool use
+  guidance, causing the agent to answer from memory instead of searching real-world
+  data, and to silently drop hard constraints like pet-friendly accommodations,
+  no-flight travel, and budget limits.
+
+Seed defects:
+- `SKILL.md` describes the planning task in prose but does not instruct the agent
+  to call any search tools before constructing the itinerary.
+- No guidance exists on which search skills to call or in what order
+  (e.g., `search_cities`, `search_accommodations`, `search_restaurants`,
+  `search_attractions`).
+- Instructions do not mention hard constraints explicitly (no flights, pet-friendly,
+  budget cap) as blocking requirements — they are buried or softened.
+- Output format requirements (exact JSON schema, 7 day objects, required fields)
+  are not specified, causing the agent to produce freeform text or incomplete JSON.
+- Emit no performance metrics.
+
+Benchmark task:
+- Ask the skill to build a 7-day itinerary for two travelers leaving from
+  Minneapolis, covering three cities in Ohio, March 17–23 2022, budget $5,100,
+  pet-friendly accommodations, no flights, preferred cuisines American /
+  Mediterranean / Chinese / Italian. Produce output at `/app/output/itinerary.json`.
+
+The three failure modes and the stage at which each surfaces:
+
+| Stage | Failure mode | Signal |
+|---|---|---|
+| Data sourcing | Agent answers from memory, no search tools called | `tool_called` array empty or absent |
+| Constraint satisfaction | Flight legs present, non-pet-friendly hotels, budget exceeded | Hard constraint fields violated |
+| Output schema | Missing required fields, fewer than 7 day objects, malformed JSON | JSON parse error or schema diff |
+
+Expected optimizer proposals:
+- add explicit instruction to call search tools before constructing any part of the itinerary
+- list the required search skills by name and specify the order: cities → accommodations → restaurants → attractions
+- promote no-flights, pet-friendly, and budget constraints to a clearly labeled hard constraints section
+- add the exact required JSON schema with field names, types, and an example day object
+- add a self-check step: verify all 7 days are present, no flights appear, all accommodations are pet-friendly, and cumulative cost is within budget before writing the file
+- add instrumentation so tool call count and constraint satisfaction are measurable
+
 ## Harness-Level Scorecard
 
 Use this temporary scorecard for the test suite until the real spec files are filled in.

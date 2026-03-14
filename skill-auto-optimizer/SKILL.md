@@ -17,10 +17,10 @@ Primary responsibilities:
 2. Optimization review: inspect recent per-skill metrics and propose improvements against the defined objectives.
 
 References:
-- Read `specs/PERF_METRIC_SPEC.md` for the required performance metric contract.
-- Read `specs/QUALITY_METRIC_SPEC.md` for the required quality metric contract.
-- Read `specs/PERF_OPTIMIZATION_OBJECTIVE_SPEC.md` for performance optimization goals.
-- Read `specs/QUALITY_OBJECTIVE_SPEC.md` for quality optimization goals.
+- Read `perf_optimization/PERF_METRIC_SPEC.md` for the required performance metric contract.
+- Read `quality_optimization/QUALITY_METRIC_SPEC.md` for the required quality metric contract.
+- Read `perf_optimization/PERF_OPTIMIZATION_OBJECTIVE_SPEC.md` for performance optimization goals.
+- Read `quality_optimization/QUALITY_OBJECTIVE_SPEC.md` for quality optimization goals.
 
 Do not invent metric schemas, log formats, or optimization targets when the reference specs define them. If a spec is still a stub, call that out and proceed with a limited review instead of pretending the standard exists.
 

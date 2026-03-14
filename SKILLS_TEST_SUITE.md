@@ -7,8 +7,8 @@ Use these fixtures to test two things:
 - approved optimization passes improve measured performance without breaking quality
 
 Do not treat this suite as the production metric spec. The optimizer's real skill-level metric contract belongs in:
-- `skill-auto-optimizer/specs/PERF_METRIC_SPEC.md`
-- `skill-auto-optimizer/specs/QUALITY_METRIC_SPEC.md`
+- `skill-auto-optimizer/perf_optimization/PERF_METRIC_SPEC.md`
+- `skill-auto-optimizer/quality_optimization/QUALITY_METRIC_SPEC.md`
 
 Until those specs are filled in, this suite uses a temporary harness-level scorecard so iteration-to-iteration improvement can still be measured.
 

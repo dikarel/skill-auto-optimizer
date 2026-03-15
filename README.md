@@ -64,3 +64,15 @@ Contributor expectations:
 ## Current State
 
 The performance and quality spec documents are still stubs. The skill workflow is defined, but the concrete metric schema and optimization objective details still need to be filled in.
+
+## Results
+
+| Fixture | perf baseline | perf opt | Δperf | qual baseline | qual opt | Δqual |
+|---|---|---|---|---|---|---|
+| chatty-reference-loader | 62.76 | 109.90 | +47 | 40.05 | 25.79 | −14 |
+| serial-scriptless | 53.42 | 78.18 | +25 | 11.61 | 17.29 | +6 |
+| missing-metrics | 76.12 | 77.96 | +2 | 46.67 | 44.91 | −2 |
+| quality-regression-trap | 47.00 | 35.62 | −11 | 34.92 | 25.56 | −9 |
+| travel-planning | 51.59 | 48.74 | −3 | 12.62 | 12.46 | −0 |
+| **Aggregate mean** | **58.18** | **70.08** | **+12** | **29.17** | **25.20** | **−4** |
+

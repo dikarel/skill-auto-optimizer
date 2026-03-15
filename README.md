@@ -1,5 +1,7 @@
 # skill-auto-optimizer
 
+![System diagram](system-diagram.png)
+
 Ask your coding agent to install this skill from GitHub:
 
 ```text

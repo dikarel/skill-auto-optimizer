@@ -18,7 +18,7 @@ Demonstrate that:
    - `SKILL.md`
    - optional `references/`, `scripts/`, or `agents/` content needed to express the seeded defect
    - enough synthetic content to make the benchmark measurable
-3. Keep the fixture skills isolated from `~/.codex/skills/.system`.
+3. Keep the fixture skills isolated from any live system-managed skills directory.
 4. Create a results directory such as `tmp/test-results/`.
 5. Create an empty CSV at `tmp/test-results/results.csv` with this header:
 

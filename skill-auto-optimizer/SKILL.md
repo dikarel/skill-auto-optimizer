@@ -1,6 +1,6 @@
 ---
 name: skill-auto-optimizer
-description: Review local filesystem Codex skills for instrumentation, quality, and performance. Use when a user wants to audit installed skills, ensure they emit quality and performance metrics, inspect recent per-skill logs, and propose read-only optimizations to SKILL.md, scripts, references, agents metadata, or new support files without changing any skill until a human approves that specific skill.
+description: Review local filesystem agent skills for instrumentation, quality, and performance. Use when a user wants to audit installed skills, ensure they emit quality and performance metrics, inspect recent per-skill logs, and propose read-only optimizations to SKILL.md, scripts, references, agents metadata, or new support files without changing any skill until a human approves that specific skill.
 ---
 
 # Skill Auto Optimizer
@@ -8,9 +8,9 @@ description: Review local filesystem Codex skills for instrumentation, quality, 
 Use this skill when the user wants to review and improve installed local skills.
 
 Default scope:
-- Scan local filesystem skills under `~/.codex/skills`.
-- Skip `~/.codex/skills/.system` unless the user explicitly overrides that default.
-- Accept extra explicit skill paths outside `~/.codex/skills`, including repo-local skills.
+- Scan local filesystem skills under the agent's configured skills directories.
+- Skip hidden or system-managed skill directories unless the user explicitly overrides that default.
+- Accept extra explicit skill paths outside the default skills directories, including repo-local skills.
 
 Primary responsibilities:
 1. Instrumentation review: ensure each target skill emits both performance and quality metrics during usage.

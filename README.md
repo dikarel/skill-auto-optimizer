@@ -55,16 +55,6 @@ How to think about each area:
 - `SKILLS_TEST_SUITE.md`: defines the sample broken skills used to evaluate optimizer behavior
 - `TEST.md`: explains how to run repeated optimization passes and graph improvement over time
 
-Contributor expectations:
-- if a change affects runtime behavior, update files under `skill-auto-optimizer/`
-- if a change affects how the skill is evaluated, update `SKILLS_TEST_SUITE.md` or `TEST.md`
-- if a change affects onboarding or installation, update `README.md`
-- keep performance and quality material separated unless a cross-cutting rule genuinely belongs in `SKILL.md`
-
-## Current State
-
-The performance and quality spec documents are still stubs. The skill workflow is defined, but the concrete metric schema and optimization objective details still need to be filled in.
-
 ## Results
 
 | Fixture | perf baseline | perf opt | Δperf | qual baseline | qual opt | Δqual |

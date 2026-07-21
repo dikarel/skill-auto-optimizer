@@ -1,0 +1,3 @@
+2026-03-15T00:00:03Z INVOICE inv_1001 customer=cus_A amount=49.00 status=paid
+2026-03-15T00:00:04Z INVOICE inv_1002 customer=cus_B amount=99.00 status=failed
+2026-03-15T00:05:00Z RETRY  inv_1002 attempt=1 result=success

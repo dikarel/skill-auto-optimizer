@@ -1,0 +1,4 @@
+2026-03-15T08:01:12Z INFO  user=alice action=login result=success ip=10.0.0.4
+2026-03-15T08:03:44Z WARN  user=bob action=login result=failed reason=bad_password
+2026-03-15T08:04:01Z INFO  user=bob action=login result=success mfa=totp
+2026-03-15T09:12:20Z INFO  user=carol action=logout session=9f2a

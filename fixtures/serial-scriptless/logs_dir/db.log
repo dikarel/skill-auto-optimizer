@@ -1,0 +1,2 @@
+2026-03-15T08:00:10Z query="SELECT * FROM users WHERE id=$1" rows=1 ms=3
+2026-03-15T08:00:12Z query="UPDATE orders SET status=$1" rows=1 ms=7 slow=false

@@ -1,0 +1,2 @@
+2026-03-15T08:10:00Z worker=w1 job=email_send status=done duration=120ms
+2026-03-15T08:10:05Z worker=w2 job=report_gen status=running

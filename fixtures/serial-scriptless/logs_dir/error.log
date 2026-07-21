@@ -1,0 +1,2 @@
+2026-03-15T08:22:11Z ERROR service=orders msg="NullPointer in OrderMapper" trace=abc123
+2026-03-15T08:22:12Z ERROR service=orders msg="retry exhausted" order=ord_77

@@ -1,0 +1,2 @@
+2026-03-15T08:30:00Z SECURITY event=token_revoked user=bob key=ak_live_9
+2026-03-15T08:31:00Z SECURITY event=ip_blocked ip=203.0.113.7 reason=bruteforce

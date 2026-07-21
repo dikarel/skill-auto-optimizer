@@ -1,2 +1,5 @@
 .DS_Store
 .beads/
+.env
+__pycache__/
+outputs/sandbox/

@@ -1,0 +1,2 @@
+2026-03-15T08:15:00Z webhook=order.created dest=https://acme/hooks status=200
+2026-03-15T08:15:03Z webhook=payment.failed dest=https://acme/hooks status=500 retry=queued

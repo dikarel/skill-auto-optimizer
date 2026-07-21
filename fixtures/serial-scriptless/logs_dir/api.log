@@ -1,0 +1,4 @@
+2026-03-15T08:05:00Z GET /v1/users 200 12ms key=ak_live_1
+2026-03-15T08:05:02Z GET /v1/users/42 200 8ms key=ak_live_1
+2026-03-15T08:06:31Z POST /v1/orders 201 45ms key=ak_live_9
+2026-03-15T08:07:10Z GET /v1/orders 429 rate_limited key=ak_live_9

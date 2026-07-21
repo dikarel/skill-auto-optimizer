@@ -1,14 +1,14 @@
 """
 fixtures.py
-Registry of the five evaluation fixtures.
+Registry of the four evaluation fixtures.
 
 Each entry declares everything the harness needs to score a fixture symmetrically:
-  * benchmark_task / expected_answer — the task and its ground truth
-  * relevant_doc_ids                 — ground truth for doc_grounding ([] = N/A)
-  * requires_tools                   — whether the no-tool hallucination penalty applies
-  * tool_names                       — which sandboxed tools are bound for this fixture
-  * backing_subdir / corpus_file     — where the fixture's real backing data lives
-  * seed_defect                      — the intentional flaw (for the optimizer prompt)
+  * benchmark_task / expected_answer: the task and its ground truth
+  * relevant_doc_ids:                 ground truth for doc_grounding ([] = N/A)
+  * requires_tools:                   whether the no-tool hallucination penalty applies
+  * tool_names:                       which sandboxed tools are bound for this fixture
+  * backing_subdir:                   where the fixture's real backing data lives
+  * seed_defect:                      the intentional flaw (for the optimizer prompt)
 
 MOCK_SCRIPTS gives a deterministic baseline-vs-optimized behavior used ONLY by
 --mock smoke tests. The scripts run through the real tool executors, so grounding

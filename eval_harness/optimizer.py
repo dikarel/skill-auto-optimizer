@@ -2,9 +2,8 @@
 optimizer.py
 Produces an optimized SKILL.md from a flawed baseline, following the published
 objective specs. Critically, it NEVER overwrites the baseline: the optimized skill
-is written to outputs/optimized/<run_tag>/<fixture>/SKILL.md. This fixes the
-reproducibility hole in the original harness, whose in-place rewrite destroyed the
-baseline (which is why the pristine flawed fixtures had to be reconstructed).
+is written to outputs/optimized/<run_tag>/<fixture>/SKILL.md, so the baseline stays
+immutable and every run is reproducible from the same starting point.
 """
 from __future__ import annotations
 

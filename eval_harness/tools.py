@@ -3,21 +3,20 @@ tools.py
 Deterministic, sandboxed tool implementations for the eval harness.
 
 Design goals:
-  * REAL execution — the agent actually calls these tools in a loop, so tool_use
-    and doc-grounding become measurable (the whole point of the re-run).
-  * Deterministic — no real shell, no live web. Backing data is fixed on disk
-    (reference docs, a synthetic log dir, a KB corpus, a mock place corpus) so
-    re-runs are reproducible and cost nothing beyond the model calls themselves.
-  * Sandboxed — read_file/read_files cannot escape the fixture's allowed root;
+  * Real execution: the agent actually calls these tools in a loop, so tool_use and
+    doc-grounding are measurable.
+  * Deterministic: no real shell, no live web. Backing data is fixed on disk
+    (reference docs, a synthetic log dir, a KB corpus) so runs are reproducible and
+    cost nothing beyond the model calls themselves.
+  * Sandboxed: read_file/read_files cannot escape the fixture's allowed root, and
     create_file can only write inside a per-run output sandbox.
 
 Every executor returns (result_text, doc_ids) where doc_ids are the identifiers
-surfaced by the call (basenames of files read, KB doc ids, or city names). The
-agent loop accumulates doc_ids so metrics.compute_doc_grounding can score them.
+surfaced by the call (basenames of files read, or KB doc ids). The agent loop
+accumulates doc_ids so metrics.compute_doc_grounding can score them.
 """
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 
@@ -28,11 +27,10 @@ class ToolError(Exception):
 class ToolContext:
     """Holds the sandbox roots and backing data for one fixture evaluation."""
 
-    def __init__(self, allowed_root: Path, output_sandbox: Path, corpus: dict | None = None):
+    def __init__(self, allowed_root: Path, output_sandbox: Path):
         self.allowed_root = allowed_root.resolve()
         self.output_sandbox = output_sandbox.resolve()
         self.output_sandbox.mkdir(parents=True, exist_ok=True)
-        self.corpus = corpus or {}
 
     # ── path safety ──────────────────────────────────────────────────────────
     def _resolve_readable(self, path: str) -> Path:
@@ -129,30 +127,6 @@ def exec_lookup_policy(ctx: ToolContext, topic: str) -> tuple[str, list[str]]:
     return f"No policy found for topic '{topic}'.", []
 
 
-def exec_web_search(ctx: ToolContext, query: str) -> tuple[str, list[str]]:
-    """Deterministic mock search over the travel corpus. Matches city names in the
-    query and returns their accommodations/restaurants/attractions with source_urls.
-    doc_ids are the matched city names (grounding = fraction of cities sourced)."""
-    corpus = ctx.corpus
-    if not corpus:
-        return "ERROR: search index unavailable", []
-    ql = query.lower()
-    hits, ids = [], []
-    for city, data in corpus.items():
-        if city == "_note" or not isinstance(data, dict):
-            continue
-        if city.lower() in ql:
-            ids.append(city)
-            hits.append(f"# {city}\n{json.dumps(data, indent=2)}")
-    if not hits:
-        # fall back to returning the full index so the agent can still ground,
-        # but do not credit any specific city
-        return "No city matched the query. Available cities: " + ", ".join(
-            c for c in corpus if c != "_note"
-        ), []
-    return "\n\n".join(hits), ids
-
-
 def exec_create_file(ctx: ToolContext, path: str, content: str) -> tuple[str, list[str]]:
     p = ctx._resolve_writable(path)
     p.write_text(content, encoding="utf-8")
@@ -165,7 +139,6 @@ EXECUTORS = {
     "read_files": exec_read_files,
     "search_knowledge_base": exec_search_knowledge_base,
     "lookup_policy": exec_lookup_policy,
-    "web_search": exec_web_search,
     "create_file": exec_create_file,
 }
 
@@ -215,15 +188,6 @@ _SCHEMAS = {
             "type": "object",
             "properties": {"topic": {"type": "string", "description": "Policy topic."}},
             "required": ["topic"],
-        },
-    },
-    "web_search": {
-        "name": "web_search",
-        "description": "Search for travel information (accommodations, restaurants, attractions) by city.",
-        "input_schema": {
-            "type": "object",
-            "properties": {"query": {"type": "string", "description": "Search query; include the city name."}},
-            "required": ["query"],
         },
     },
     "create_file": {

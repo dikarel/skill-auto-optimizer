@@ -36,8 +36,10 @@ The optimizer works per skill, not as a global batch approval flow.
 - `skill-auto-optimizer/SKILL.md`: primary skill instructions
 - `skill-auto-optimizer/perf_optimization/`: performance metric and objective specs
 - `skill-auto-optimizer/quality_optimization/`: quality metric and objective specs
-- `SKILLS_TEST_SUITE.md`: intentionally flawed sample-skill fixtures for evaluation
-- `TEST.md`: iterative evaluation plan and graphing workflow
+- `eval_harness/`: the evaluation harness (real tool-execution loop, live tool-use and grounding metrics, multi-sample confidence intervals)
+- `fixtures/`: the four intentionally flawed baseline skills and their backing data
+- `SKILLS_TEST_SUITE.md`: definitions of the fixture suite
+- `TEST.md`: how to run the evaluation
 
 ## Contributor Structure Guide
 
@@ -52,17 +54,28 @@ How to think about each area:
 - `skill-auto-optimizer/SKILL.md`: the runtime entrypoint; keep this concise and use it to point to deeper docs rather than stuffing everything into one file
 - `skill-auto-optimizer/perf_optimization/`: performance-specific standards and optimization objectives
 - `skill-auto-optimizer/quality_optimization/`: quality-specific standards and optimization objectives
+- `eval_harness/`: the harness that evaluates the fixtures (see `eval_harness/README.md`)
+- `fixtures/`: the four flawed baseline skills and their backing data
 - `SKILLS_TEST_SUITE.md`: defines the sample broken skills used to evaluate optimizer behavior
-- `TEST.md`: explains how to run repeated optimization passes and graph improvement over time
+- `TEST.md`: explains how to run the evaluation
 
 ## Results
 
-| Fixture | perf baseline | perf opt | Δperf | qual baseline | qual opt | Δqual |
-|---|---|---|---|---|---|---|
-| chatty-reference-loader | 62.76 | 109.90 | +47 | 40.05 | 25.79 | −14 |
-| serial-scriptless | 53.42 | 78.18 | +25 | 11.61 | 17.29 | +6 |
-| missing-metrics | 76.12 | 77.96 | +2 | 46.67 | 44.91 | −2 |
-| quality-regression-trap | 47.00 | 35.62 | −11 | 34.92 | 25.56 | −9 |
-| travel-planning | 51.59 | 48.74 | −3 | 12.62 | 12.46 | −0 |
-| **Aggregate mean** | **58.18** | **70.08** | **+12** | **29.17** | **25.20** | **−4** |
+Four fixtures, N = 8 samples per variant, `claude-sonnet-5` as agent, judge, and
+optimizer. Values are means; perf is the harness perf score, quality is the 0-100
+composite. Reproduce with `python eval_harness/run.py --samples 8`.
+
+| Fixture | perf baseline | perf opt | quality baseline | quality opt |
+|---|---|---|---|---|
+| chatty-reference-loader | 93.8 | 149.6 | 86.2 | 90.4 |
+| serial-scriptless | 21.2 | 76.0 | 79.0 | 79.4 |
+| missing-metrics | 168.4 | 131.7 | 57.9 | 50.5 |
+| quality-regression-trap | 218.6 | 89.5 | 37.6 | 86.5 |
+| **Aggregate mean** | **125.5** | **111.7** | **65.2** | **76.7** |
+
+Under symmetric measurement, optimization improves quality (mean +18%) without
+trading it for efficiency. Aggregate efficiency declines modestly (-11%): that drop is
+dominated by the cost of the retrieval that grounding requires (quality-regression-trap
+does more tool work to answer correctly), plus one over-optimization regression on
+missing-metrics that the per-skill human approval gate is designed to catch.
 

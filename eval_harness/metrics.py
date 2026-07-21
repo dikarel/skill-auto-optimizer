@@ -2,21 +2,19 @@
 metrics.py
 Quality and performance metric functions.
 
-Ported from scripts/run_fixtures.py, with the two critical fixes that motivate the
-symmetric-instrumentation re-run:
+Two properties matter for measuring quality and efficiency on equal footing:
 
-  1. tool_use_rate and doc_grounding are NO LONGER hardcoded to 0.0. They are
-     computed from what the agent actually did during a real tool-execution loop
-     (see agent_loop.py). In the original harness these two fields — worth 35 of
-     the 100 quality points and ranked the #1 quality objective — were always 0,
-     so the composite quality score was structurally blind to grounding/tool use.
+  1. tool_use_rate and doc_grounding are computed from what the agent actually did
+     during a real tool-execution loop (see agent_loop.py). These two fields are
+     worth 35 of the 100 quality points and rank as the #1 quality objective, so
+     the composite quality score depends on observing grounding and tool use rather
+     than assuming them.
 
-  2. perf_score is computed from OBSERVED execution (real tool_calls, real
-     files_read / bytes_read from the tool trace) rather than a static regex scan
-     of the skill text.
+  2. perf_score is computed from observed execution (real tool_calls, real
+     files_read / bytes_read from the tool trace) rather than a static scan of the
+     skill text.
 
-The scoring formulas themselves are unchanged from QUALITY_METRIC_SPEC.md /
-PERF_METRIC_SPEC.md so results remain comparable to the original study.
+The scoring formulas follow QUALITY_METRIC_SPEC.md and PERF_METRIC_SPEC.md.
 """
 from __future__ import annotations
 
@@ -44,7 +42,7 @@ def compute_citation_score(text: str) -> float:
 
 def compute_hallucination_risk(text: str, tool_called: bool, requires_tools: bool) -> float:
     """Higher = worse. +2 phantom hits when the fixture needs external data but no
-    tool was called — now driven by REAL tool_called, not a hardcoded False."""
+    tool was called; tool_called comes from the real tool-execution trace."""
     lower = text.lower()
     matches = sum(1 for p in HALLUCINATION_RISK_PHRASES if p in lower)
     if requires_tools and not tool_called:
@@ -91,7 +89,7 @@ def compute_doc_grounding(retrieved_doc_ids: list[str], relevant_doc_ids: list[s
     """Fraction of relevant docs actually retrieved during the run.
     Returns None when the fixture declares no relevant docs (self-contained tasks)
     so that grounding is EXCLUDED from that fixture's quality score rather than
-    dragging it to zero — matching QUALITY_METRIC_SPEC.md's 'no relevant doc IDs'
+    dragging it to zero, matching QUALITY_METRIC_SPEC.md's 'no relevant doc IDs'
     handling."""
     relevant = set(relevant_doc_ids)
     if not relevant:
@@ -102,8 +100,8 @@ def compute_doc_grounding(retrieved_doc_ids: list[str], relevant_doc_ids: list[s
 
 # ── Composite scores ──────────────────────────────────────────────────────────
 def compute_perf_score(wall_clock_s: float, tool_calls: int, files_read: int, bytes_read: int) -> float:
-    """Harness perf_score from SKILLS_TEST_SUITE.md. Inputs are now OBSERVED from
-    the execution trace, not static analysis."""
+    """Harness perf_score from SKILLS_TEST_SUITE.md. Inputs are taken from the
+    observed execution trace."""
     return 1000 / (1 + wall_clock_s + 0.25 * tool_calls + 0.01 * files_read + 0.0001 * bytes_read)
 
 
@@ -119,9 +117,8 @@ def compute_quality_score(
 
     When doc_grounding is None (fixture has no relevant docs), its 20-point
     component is dropped AND the max is renormalised so self-contained fixtures are
-    not penalised for a dimension that does not apply to them. In the original
-    harness both tool_use_rate and doc_grounding were passed as a literal 0.0 for
-    every fixture — that is the bug this function fixes.
+    not penalised for a dimension that does not apply to them. tool_use_rate and
+    doc_grounding are live inputs, computed from the tool-execution trace.
     """
     components = [
         ("tool_use", tool_use_rate * 15, 15),

@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 """
-run.py — Symmetric-instrumentation fixture evaluation.
+run.py: Symmetric-instrumentation fixture evaluation.
 
-For each fixture: evaluate the (reconstructed) flawed baseline over N samples,
-optimize it to a SEPARATE file, evaluate the optimized skill over N samples, and
-report before/after with mean ± 95% CI. Unlike the original harness, tool_use_rate
-and doc_grounding are measured from a real tool-execution loop, and perf inputs come
-from the observed trace.
+For each fixture: evaluate the flawed baseline over N samples, optimize it to a
+SEPARATE file, evaluate the optimized skill over N samples, and report before/after
+with mean ± 95% CI. tool_use_rate and doc_grounding are measured from a real
+tool-execution loop, and perf inputs come from the observed trace.
 
 Usage:
   python eval_harness/run.py --mock                 # no API calls, smoke test
   python eval_harness/run.py --samples 8            # real run (needs ANTHROPIC_API_KEY)
-  python eval_harness/run.py --fixtures quality-regression-trap travel-planning
+  python eval_harness/run.py --fixtures quality-regression-trap serial-scriptless
 
 Env: ANTHROPIC_API_KEY, and optionally EVAL_MODEL / JUDGE_MODEL / OPTIMIZER_MODEL.
 """
@@ -68,7 +67,7 @@ def configure_logging(level: str = "INFO", log_file: str | None = None) -> None:
         LOG.addHandler(file_handler)
         LOG.info("logging to file: %s", path)
 
-# Cheapest capable default keeps re-run cost low; bump to claude-sonnet-5 for the
+# Cheapest capable default keeps run cost low; bump to claude-sonnet-5 for the
 # headline paper run. Prices below are approximate ($/M tokens) and overridable.
 DEFAULT_MODEL = os.getenv("EVAL_MODEL", "claude-sonnet-5")
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", DEFAULT_MODEL)
@@ -89,10 +88,7 @@ def est_cost(model: str, in_tok: int, out_tok: int) -> float:
 def make_ctx(fixture_name: str, fixture_def: dict, run_tag: str, variant: str, sample: int) -> ToolContext:
     allowed = FIXTURES_DIR / fixture_def["backing_subdir"]
     sandbox = ROOT / "outputs" / "sandbox" / run_tag / fixture_name / variant / f"s{sample}"
-    corpus = {}
-    if fixture_def.get("corpus_file"):
-        corpus = json.loads((allowed / fixture_def["corpus_file"]).read_text(encoding="utf-8"))
-    return ToolContext(allowed_root=allowed, output_sandbox=sandbox, corpus=corpus)
+    return ToolContext(allowed_root=allowed, output_sandbox=sandbox)
 
 
 def eval_one_sample(fixture_name, fixture_def, skill_text, variant, sample, client, mock, run_tag,
@@ -290,7 +286,7 @@ def _fmt_ci(agg: dict | None) -> str:
 def _print_scorecard(rows: list[dict]) -> None:
     W = 104
     print("\n" + "=" * W)
-    print("SCORECARD — mean ± 95% CI  (perf & quality now include live tool_use / grounding)")
+    print("SCORECARD  (mean ± 95% CI; perf & quality include live tool_use / grounding)")
     print("=" * W)
     print(f"{'Fixture':<26}{'variant':<10}{'perf':>13}{'quality':>13}{'tool_use':>10}{'grounding':>11}{'pass':>7}")
     print("-" * W)
